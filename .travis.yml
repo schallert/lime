@@ -4,8 +4,7 @@ go: 1.1
 
 install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq cmake
-  - ln -s $(pwd) ../../../lime #Fix Travis CI checking out the code to github.com/limetext/lime instead of lime
+  - sudo apt-get install -qq python3.3-dev libonig-dev
 
 script:
   - ./tasks/ci/lime.sh

@@ -5,7 +5,7 @@
 package main
 
 import (
-	"lime/3rdparty/libs/termbox-go"
+	"github.com/limetext/termbox-go"
 	"testing"
 )
 

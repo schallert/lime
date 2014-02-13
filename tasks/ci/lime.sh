@@ -13,27 +13,27 @@ function fold_end {
     fi
 }
 
-cd build
+function do_test {
+	go test ./$1/...
+	build_result=$?
+	echo -ne "${YELLOW}=>${RESET} test $1 - "
+	if [ "$build_result" == "0" ]; then
+	    echo -e "${GREEN}SUCCEEDED${RESET}"
+	else
+	    echo -e "${RED}FAILED${RESET}"
+	fi
+}
 
-fold_start "cmake"
-cmake ..
-fold_end "cmake"
+fold_start "gopy"
+go get github.com/limetext/gopy/lib
+fold_end "gopy"
+fold_start "rubex"
+go get github.com/limetext/rubex
+fold_end "rubex"
+fold_start "termbox-go"
+go get github.com/limetext/termbox-go
+fold_end "termbox-go"
 
-fold_start "make"
-make
-build_result=$?
-fold_end "make"
+do_test "backend"
+do_test "frontend"
 
-# Print colored build result.
-RED="\e[31m"
-GREEN="\e[32m"
-YELLOW="\e[33m"
-RESET="\e[0m"
-echo -ne "${YELLOW}=>${RESET} BUILD - "
-if [ "$build_result" == "0" ]; then
-    echo -e "${GREEN}SUCCEEDED${RESET}"
-else
-    echo -e "${RED}FAILED${RESET}"
-fi
-
-make test

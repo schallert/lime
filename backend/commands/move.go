@@ -6,13 +6,12 @@ package commands
 
 import (
 	"fmt"
+	. "github.com/limetext/lime/backend"
+	"github.com/limetext/lime/backend/util" // Beginning of line
 	"github.com/quarnster/util/text"
-	. "lime/backend"
-	"lime/backend/util"
 )
 
 const (
-	// Beginning of line
 	BOL MoveToType = iota
 	// End of line
 	EOL
