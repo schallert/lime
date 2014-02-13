@@ -4,7 +4,7 @@ go: 1.1
 
 install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq python3.3-dev libonig-dev
+  - sudo apt-get install -qq libpython3.3-dev libonig-dev
 
 script:
   - ./tasks/ci/lime.sh
