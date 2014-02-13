@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"code.google.com/p/log4go"
 	"fmt"
-	"github.com/limetext/lime/3rdparty/libs/gopy/lib"
+	"github.com/limetext/gopy/lib"
 	"github.com/limetext/lime/backend"
 	_ "github.com/limetext/lime/backend/commands"
 	"github.com/limetext/lime/backend/render"

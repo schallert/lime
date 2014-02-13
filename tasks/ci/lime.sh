@@ -35,9 +35,14 @@ go get github.com/limetext/termbox-go
 fold_end "termbox-go"
 
 fold_start "other go dependencies"
-go get -d -u -t github.com/limetext/lime/frontend/termbox
+go get -d -u github.com/limetext/lime/frontend/termbox
 fold_end "other go dependencies"
 
 do_test "backend"
-do_test "frontend"
+fail1=$build_result
 
+do_test "frontend"
+fail2=$build_result
+
+let ex=$fail1+$fail2
+exit $ex
