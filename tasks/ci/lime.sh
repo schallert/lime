@@ -35,8 +35,10 @@ go get github.com/limetext/termbox-go
 fold_end "termbox-go"
 
 fold_start "other go dependencies"
-go get -d -u github.com/limetext/lime/frontend/termbox
+go get code.google.com/p/log4go github.com/quarnster/parser/pegparser github.com/quarnster/util/text github.com/howeyc/fsnotify
 fold_end "other go dependencies"
+
+go install ./frontend/termbox
 
 do_test "backend"
 fail1=$build_result
