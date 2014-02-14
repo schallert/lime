@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Colors.
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+RESET="\e[0m"
+
 function fold_start {
     if [ "$TRAVIS" == "true" ]; then
         echo -en "travis_fold:start:$1\r"
@@ -24,19 +30,15 @@ function do_test {
 	fi
 }
 
-fold_start "gopy"
+fold_start "godeps"
+go get code.google.com/p/log4go
+go get github.com/quarnster/parser/pegparser
+go get github.com/quarnster/util/text
+go get github.com/howeyc/fsnotify
 go get github.com/limetext/gopy/lib
-fold_end "gopy"
-fold_start "rubex"
 go get github.com/limetext/rubex
-fold_end "rubex"
-fold_start "termbox-go"
 go get github.com/limetext/termbox-go
-fold_end "termbox-go"
-
-fold_start "other go dependencies"
-go get code.google.com/p/log4go github.com/quarnster/parser/pegparser github.com/quarnster/util/text github.com/howeyc/fsnotify
-fold_end "other go dependencies"
+fold_end "godeps"
 
 go install ./frontend/termbox
 
