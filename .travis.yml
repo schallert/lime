@@ -4,9 +4,8 @@ go: 1.2
 
 install:
   - echo 'yes' | sudo add-apt-repository ppa:fkrull/deadsnakes
-  - echo 'yes' |  sudo add-apt-repository ppa:ubuntu-sdk-team/ppa
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libonig-dev mercurial python3.3 python3.3-dev ubuntu-sdk qtbase5-private-dev qtdeclarative5-private-dev libqt5opengl5-dev
+  - sudo apt-get install -qq libonig-dev mercurial python3.3 python3.3-dev
 
 script:
   - ./tasks/ci/lime.sh

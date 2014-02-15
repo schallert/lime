@@ -34,14 +34,14 @@ fold_start "termbox"
 go get github.com/limetext/lime/frontend/termbox
 fold_end "termbox"
 
-fold_start "qml"
-go get github.com/limetext/lime/frontend/qml
-fold_end "qml"
+# fold_start "qml"
+# go get github.com/limetext/lime/frontend/qml
+# fold_end "qml"
 
 do_test "backend"
 fail1=$build_result
 
-do_test "frontend"
+do_test "frontend/termbox"
 fail2=$build_result
 
 let ex=$fail1+$fail2
