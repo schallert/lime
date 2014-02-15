@@ -30,17 +30,13 @@ function do_test {
 	fi
 }
 
-fold_start "godeps"
-go get code.google.com/p/log4go
-go get github.com/quarnster/parser/pegparser
-go get github.com/quarnster/util/text
-go get github.com/howeyc/fsnotify
-go get github.com/limetext/gopy/lib
-go get github.com/limetext/rubex
-go get github.com/limetext/termbox-go
-fold_end "godeps"
+fold_start "termbox"
+go get github.com/limetext/lime/frontend/termbox
+fold_end "termbox"
 
-go install ./frontend/termbox
+fold_start "qml"
+go get github.com/limetext/lime/frontend/qml
+fold_end "qml"
 
 do_test "backend"
 fail1=$build_result
