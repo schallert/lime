@@ -32,3 +32,16 @@ func TestGlobalLog(t *testing.T) {
 	log.Info("Testing: %s %s", "hello", "world")
 	wg.Wait()
 }
+
+func TestLogf(t *testing.T) {
+	l := log.NewLogger()
+	l.Logf(log.FINEST, "sometest")
+	l.Logf(log.FINE, "sometest")
+	l.Logf(log.DEBUG, "sometest")
+	l.Logf(log.TRACE, "sometest")
+	l.Logf(log.INFO, "sometest")
+	l.Logf(log.WARNING, "sometest")
+	l.Logf(log.ERROR, "sometest")
+	l.Logf(log.CRITICAL, "sometest")
+	l.Logf(999, "sometest")
+}
