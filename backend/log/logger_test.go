@@ -7,7 +7,6 @@ package log_test
 import (
 	"sync"
 	"testing"
-
 	"code.google.com/p/log4go"
 	"github.com/limetext/lime/backend/log"
 )
@@ -43,8 +42,14 @@ func TestNewLogger(t *testing.T) {
 
 func TestLogLevels(t *testing.T) {
 	l := log.NewLogger()
-
 	l.AddFilter("sometest", log.FINE, testlogger(func(str string) {}))
 	l.AddFilter("sometest", log.FINEST, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.DEBUG, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.TRACE, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.WARNING, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.INFO, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.ERROR, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.CRITICAL, testlogger(func(str string) {}))
+	l.AddFilter("sometest", 999, testlogger(func(str string) {}))
 	l.Debug("Some debug statement")
 }
