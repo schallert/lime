@@ -46,6 +46,7 @@ func TestLogf(t *testing.T) {
 	l.Logf(log.CRITICAL, "sometest")
 	l.Logf(999, "sometest")
 }
+<<<<<<< HEAD
 
 func TestClose(t *testing.T) {
 	l := log.NewLogger()
@@ -53,6 +54,8 @@ func TestClose(t *testing.T) {
 	m := log.NewLogger()
 	m.Close("something wrong")
 }
+=======
+>>>>>>> e1500767cf4395ed26ef7158a98926fcd18c60f9
 
 func TestNewLogger(t *testing.T) {
 	l := log.NewLogger()
@@ -63,9 +66,14 @@ func TestNewLogger(t *testing.T) {
 
 func TestLogLevels(t *testing.T) {
 	l := log.NewLogger()
-
 	l.AddFilter("sometest", log.FINE, testlogger(func(str string) {}))
 	l.AddFilter("sometest", log.FINEST, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.DEBUG, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.TRACE, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.WARNING, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.INFO, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.ERROR, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.CRITICAL, testlogger(func(str string) {}))
+	l.AddFilter("sometest", 999, testlogger(func(str string) {}))
 	l.Debug("Some debug statement")
-
 }
