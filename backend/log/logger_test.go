@@ -46,5 +46,8 @@ func TestLogLevels(t *testing.T) {
 
 	l.AddFilter("sometest", log.FINE, testlogger(func(str string) {}))
 	l.AddFilter("sometest", log.FINEST, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.DEBUG, testlogger(func(str string) {}))
 	l.Debug("Some debug statement")
 }
+
+
