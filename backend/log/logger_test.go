@@ -47,6 +47,18 @@ func TestLogf(t *testing.T) {
 	l.Logf(999, "sometest")
 }
 
+func TestClose(t *testing.T) {
+	l := log.NewLogger()
+	l.Close()
+	m := log.NewLogger()
+	m.Close("something wrong")
+}
+
+func TestClose2(t *testing.T) {
+	l := log.NewLogger()
+	l.Close(1,2,3)
+}
+
 func TestNewLogger(t *testing.T) {
 	l := log.NewLogger()
 	if l == nil {
@@ -68,4 +80,15 @@ func TestLogLevels(t *testing.T) {
 	l.Debug("Some debug statement")
 }
 
-
+func TestLogFunctions(t *testing.T) {
+	l := log.NewLogger()
+	
+	l.Finest("Some statement")
+	l.Fine("Some statement")
+	l.Debug("Some statement")
+	l.Trace("Some statement")
+	l.Warn("Some statement")
+	l.Error("Some statement")
+	l.Critical("Some statement")
+	
+}
