@@ -45,6 +45,14 @@ func TestLogf(t *testing.T) {
 	l.Logf(log.ERROR, "sometest")
 	l.Logf(log.CRITICAL, "sometest")
 	l.Logf(999, "sometest")
+}
+
+func TestClose(t *testing.T) {
+	l := log.NewLogger()
+	l.Close()
+	m := log.NewLogger()
+	m.Close("something wrong")
+}
 
 func TestNewLogger(t *testing.T) {
 	l := log.NewLogger()
