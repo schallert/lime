@@ -5,10 +5,11 @@
 package log_test
 
 import (
-	"code.google.com/p/log4go"
-	"github.com/limetext/lime/backend/log"
 	"sync"
 	"testing"
+
+	"code.google.com/p/log4go"
+	"github.com/limetext/lime/backend/log"
 )
 
 type testlogger func(string)
@@ -44,4 +45,19 @@ func TestLogf(t *testing.T) {
 	l.Logf(log.ERROR, "sometest")
 	l.Logf(log.CRITICAL, "sometest")
 	l.Logf(999, "sometest")
+
+func TestNewLogger(t *testing.T) {
+	l := log.NewLogger()
+	if l == nil {
+		t.Error("Returned a nil logger")
+	}
+}
+
+func TestLogLevels(t *testing.T) {
+	l := log.NewLogger()
+
+	l.AddFilter("sometest", log.FINE, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.FINEST, testlogger(func(str string) {}))
+	l.Debug("Some debug statement")
+
 }
