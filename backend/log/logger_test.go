@@ -34,6 +34,19 @@ func TestGlobalLog(t *testing.T) {
 	wg.Wait()
 }
 
+func TestLogf(t *testing.T) {
+	l := log.NewLogger()
+	l.Logf(log.FINEST, "sometest")
+	l.Logf(log.FINE, "sometest")
+	l.Logf(log.DEBUG, "sometest")
+	l.Logf(log.TRACE, "sometest")
+	l.Logf(log.INFO, "sometest")
+	l.Logf(log.WARNING, "sometest")
+	l.Logf(log.ERROR, "sometest")
+	l.Logf(log.CRITICAL, "sometest")
+	l.Logf(999, "sometest")
+}
+
 func TestNewLogger(t *testing.T) {
 	l := log.NewLogger()
 	if l == nil {
@@ -43,10 +56,15 @@ func TestNewLogger(t *testing.T) {
 
 func TestLogLevels(t *testing.T) {
 	l := log.NewLogger()
-
 	l.AddFilter("sometest", log.FINE, testlogger(func(str string) {}))
 	l.AddFilter("sometest", log.FINEST, testlogger(func(str string) {}))
 	l.AddFilter("sometest", log.DEBUG, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.TRACE, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.WARNING, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.INFO, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.ERROR, testlogger(func(str string) {}))
+	l.AddFilter("sometest", log.CRITICAL, testlogger(func(str string) {}))
+	l.AddFilter("sometest", 999, testlogger(func(str string) {}))
 	l.Debug("Some debug statement")
 }
 
