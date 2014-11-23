@@ -14,6 +14,4 @@
 ## Viewing Test Coverage
 
 1. Run a test suite that you wish to view coverage of with the `coverprofile` flag in order to generate a coverage report. For example to view coverage for the `log` package, run - `go test github.com/limetext/lime/backend/log -coverprofile=profile.out`
-2. Run the html generation tool on the generated report - `go tool cover -html=profile.out`
-3. It will say something like "HTML output written to <some_file_location>"
-4. To view the file, move the file generated to the directory `/vagrant` so you can view it on your laptop
+2. Run the html generation tool on the generated report - `go tool cover -html=profile.out -o /vagrant/profile.html`
