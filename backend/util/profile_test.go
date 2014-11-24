@@ -49,3 +49,7 @@ func TestSwap(t *testing.T) {
 		t.Error("prsorter swapped incorrectly!")
 	}
 }
+
+func TestString(t *testing.T) {
+	Prof.String()
+}
