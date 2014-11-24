@@ -17,3 +17,7 @@ func TestExit(t *testing.T) {
 	ptoken := &ProfToken{}
 	ptoken.Exit()
 }
+
+func TestString(t *testing.T) {
+	Prof.String()
+}
