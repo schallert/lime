@@ -9,17 +9,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/limetext/gopy/lib"
-	"github.com/limetext/lime/backend"
-	_ "github.com/limetext/lime/backend/commands"
-	"github.com/limetext/lime/backend/keys"
-	"github.com/limetext/lime/backend/log"
-	"github.com/limetext/lime/backend/render"
-	"github.com/limetext/lime/backend/sublime"
-	"github.com/limetext/lime/backend/textmate"
-	"github.com/limetext/lime/backend/util"
-	. "github.com/limetext/text"
-	"golang.org/x/net/websocket"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -33,6 +22,18 @@ import (
 	"time"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/limetext/gopy/lib"
+	"github.com/limetext/lime/backend"
+	_ "github.com/limetext/lime/backend/commands"
+	"github.com/limetext/lime/backend/keys"
+	"github.com/limetext/lime/backend/log"
+	"github.com/limetext/lime/backend/render"
+	"github.com/limetext/lime/backend/sublime"
+	"github.com/limetext/lime/backend/textmate"
+	"github.com/limetext/lime/backend/util"
+	. "github.com/limetext/text"
+	"golang.org/x/net/websocket"
 )
 
 var (
@@ -185,6 +186,17 @@ func (t *tbfe) OkCancelDialog(msg, ok string) bool {
 	t.BroadcastData(map[string]interface{}{"type": "okCancelDialog", "msg": msg, "ok": ok})
 
 	return false
+}
+
+// Add Erased + Inserted methods so that type `*tbfe` meets the BufferObserver
+// interface (rather than using old AddCallback method). These are still just
+// wrappers around `scroll` but it gets rid of AddCallbacks
+func (t *tbfe) Erased(changed_buffer Buffer, region_removed Region, data_removed []rune) {
+	t.scroll(changed_buffer)
+}
+
+func (t *tbfe) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
+	t.scroll(changed_buffer)
 }
 
 func (t *tbfe) scroll(b Buffer, pos, delta int) {
@@ -471,7 +483,7 @@ func (t *tbfe) loop() {
 	v := w.OpenFile("main.go", 0)
 	//v.Settings().Set("trace", true)
 	v.Settings().Set("syntax", "../../3rdparty/bundles/go.tmbundle/Syntaxes/Go.tmLanguage")
-	c.Buffer().AddCallback(t.scroll)
+	c.Buffer().AddObserver(t)
 
 	sel := v.Sel()
 	sel.Clear()
