@@ -7,6 +7,7 @@ package log_test
 import (
 	"sync"
 	"testing"
+	"time"
 
 	"code.google.com/p/log4go"
 	"github.com/limetext/lime/backend/log"
@@ -36,15 +37,13 @@ func TestGlobalLog(t *testing.T) {
 
 func TestLogf(t *testing.T) {
 	l := log.NewLogger()
-	l.Logf(log.FINEST, "sometest")
-	l.Logf(log.FINE, "sometest")
-	l.Logf(log.DEBUG, "sometest")
-	l.Logf(log.TRACE, "sometest")
-	l.Logf(log.INFO, "sometest")
-	l.Logf(log.WARNING, "sometest")
-	l.Logf(log.ERROR, "sometest")
-	l.Logf(log.CRITICAL, "sometest")
-	l.Logf(999, "sometest")
+
+	// Log a message at each level. Because we cannot access the internals of the logger,
+	// we assume that this test succeeds if it does not cause an error (although we cannot
+	// actually look inside and see if the level was changed)
+	for _, test_lvl := range []log.Level{log.FINEST, log.FINE, log.DEBUG, log.TRACE, log.INFO, log.WARNING, log.ERROR, log.CRITICAL, 999} {
+		l.Logf(test_lvl, time.Now().String())
+	}
 }
 
 func TestClose(t *testing.T) {
@@ -63,27 +62,24 @@ func TestNewLogger(t *testing.T) {
 
 func TestLogLevels(t *testing.T) {
 	l := log.NewLogger()
-	l.AddFilter("sometest", log.FINE, testlogger(func(str string) {}))
-	l.AddFilter("sometest", log.FINEST, testlogger(func(str string) {}))
-	l.AddFilter("sometest", log.DEBUG, testlogger(func(str string) {}))
-	l.AddFilter("sometest", log.TRACE, testlogger(func(str string) {}))
-	l.AddFilter("sometest", log.WARNING, testlogger(func(str string) {}))
-	l.AddFilter("sometest", log.INFO, testlogger(func(str string) {}))
-	l.AddFilter("sometest", log.ERROR, testlogger(func(str string) {}))
-	l.AddFilter("sometest", log.CRITICAL, testlogger(func(str string) {}))
-	l.AddFilter("sometest", 999, testlogger(func(str string) {}))
-	l.Debug("Some debug statement")
+
+	// Again, because we cannot access the internals of log this will
+	// succeed as long there is no error
+	for _, test_lvl := range []log.Level{log.FINEST, log.FINE, log.DEBUG, log.TRACE, log.INFO, log.WARNING, log.ERROR, log.CRITICAL, 999} {
+		// Use a random-ish string (the current time)
+		l.AddFilter(time.Now().String(), test_lvl, testlogger(func(str string) {}))
+	}
 }
 
 func TestLogFunctions(t *testing.T) {
 	l := log.NewLogger()
-	
-	l.Finest("Some statement")
-	l.Fine("Some statement")
-	l.Debug("Some statement")
-	l.Trace("Some statement")
-	l.Warn("Some statement")
-	l.Error("Some statement")
-	l.Critical("Some statement")
-	
+
+	l.Finest(time.Now().String())
+	l.Fine(time.Now().String())
+	l.Debug(time.Now().String())
+	l.Trace(time.Now().String())
+	l.Warn(time.Now().String())
+	l.Error(time.Now().String())
+	l.Critical(time.Now().String())
+
 }
