@@ -5,6 +5,12 @@ package main
 
 import (
 	"flag"
+	"path"
+	"runtime/debug"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/limetext/gopy/lib"
 	"github.com/limetext/lime/backend"
 	_ "github.com/limetext/lime/backend/commands"
@@ -15,11 +21,6 @@ import (
 	"github.com/limetext/lime/backend/util"
 	"github.com/limetext/termbox-go"
 	. "github.com/limetext/text"
-	"path"
-	"runtime/debug"
-	"strconv"
-	"sync"
-	"time"
 )
 
 var (
@@ -125,6 +126,12 @@ type tbfe struct {
 	currentWindow  *backend.Window
 }
 
+// Struct to hold info required for observer pattern implementation
+type termboxObserver struct {
+	t *tbfe
+	v *backend.View
+}
+
 // Creates and initializes the frontend.
 func createFrontend() *tbfe {
 	var t tbfe
@@ -145,7 +152,7 @@ func createFrontend() *tbfe {
 		t.currentView = t.currentWindow.NewFile()
 	}
 
-	t.console.Buffer().AddCallback(t.scroll)
+	t.console.Buffer().AddObserver(&t)
 	t.setupCallbacks(t.currentView)
 
 	path := path.Join("..", "..", "3rdparty", "bundles", "TextMate-Themes", "Monokai.tmTheme")
@@ -356,19 +363,44 @@ func (t *tbfe) OkCancelDialog(msg, ok string) bool {
 	return false
 }
 
+// Make type `*tbfe` implement the BufferObserver interface
+func (t *tbfe) Erased(changed_buffer Buffer, region_removed Region, data_removed []rune) {
+	t.scroll(changed_buffer)
+}
+
+func (t *tbfe) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
+	t.scroll(changed_buffer)
+}
+
 func (t *tbfe) scroll(b Buffer, pos, delta int) {
 	t.Show(backend.GetEditor().Console(), Region{b.Size(), b.Size()})
+}
+
+// Copied from original function body in setupCallbacks
+func callbackEdit(t *tbfe, v *backend.View, delta int) {
+	t.lock.Lock()
+	visible := t.layout[view].visible
+	t.lock.Unlock()
+	t.Show(view, Region{visible.Begin(), visible.End() + delta})
+}
+
+func (ob *termboxObserver) Erased(changed_buffer Buffer, region_removed Region, data_removed []rune) {
+	// Diff is from start to end (because removing at end of buffer)
+	var diff int = region_removed.A - region_removed.B
+	callbackEdit(ob.t, ob.v, diff)
+}
+
+func (ob *termboxObserver) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
+	// Diff is from new end to old start (because inserting at end of buffer)
+	var diff int = region_inserted.A - region_inserted.B
+	callbackEdit(ob.t, ob.v, diff)
 }
 
 func (t tbfe) setupCallbacks(view *backend.View) {
 	// Ensure that the visible region currently presented is
 	// inclusive of the insert/erase delta.
-	view.Buffer().AddCallback(func(b Buffer, pos, delta int) {
-		t.lock.Lock()
-		visible := t.layout[view].visible
-		t.lock.Unlock()
-		t.Show(view, Region{visible.Begin(), visible.End() + delta})
-	})
+	mainObserver = termboxObserver{&t, view}
+	view.Buffer().AddObserver(&mainObserver)
 
 	backend.OnNew.Add(func(v *backend.View) {
 		v.Settings().AddOnChange("lime.frontend.termbox.render", func(name string) { t.render() })
