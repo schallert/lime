@@ -5,6 +5,12 @@ package main
 
 import (
 	"flag"
+	"path"
+	"runtime/debug"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/limetext/gopy/lib"
 	"github.com/limetext/lime/backend"
 	_ "github.com/limetext/lime/backend/commands"
@@ -15,11 +21,6 @@ import (
 	"github.com/limetext/lime/backend/util"
 	"github.com/limetext/termbox-go"
 	. "github.com/limetext/text"
-	"path"
-	"runtime/debug"
-	"strconv"
-	"sync"
-	"time"
 )
 
 var (
@@ -145,7 +146,7 @@ func createFrontend() *tbfe {
 		t.currentView = t.currentWindow.NewFile()
 	}
 
-	t.console.Buffer().AddCallback(t.scroll)
+	t.console.Buffer().AddObserver(&t)
 	t.setupCallbacks(t.currentView)
 
 	path := path.Join("..", "..", "3rdparty", "bundles", "TextMate-Themes", "Monokai.tmTheme")
@@ -354,6 +355,15 @@ func (t *tbfe) MessageDialog(msg string) {
 func (t *tbfe) OkCancelDialog(msg, ok string) bool {
 	log.Info(msg, ok)
 	return false
+}
+
+// Make type `*tbfe` implement the BufferObserver interface
+func (t *tbfe) Erased(changed_buffer Buffer, region_removed Region, data_removed []rune) {
+	t.scroll(changed_buffer)
+}
+
+func (t *tbfe) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
+	t.scroll(changed_buffer)
 }
 
 func (t *tbfe) scroll(b Buffer, pos, delta int) {
