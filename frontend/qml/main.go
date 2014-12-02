@@ -7,6 +7,13 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"image/color"
+	"io"
+	"runtime"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/howeyc/fsnotify"
 	"github.com/limetext/gopy/lib"
 	"github.com/limetext/lime/backend"
@@ -18,13 +25,6 @@ import (
 	"github.com/limetext/lime/backend/textmate"
 	"github.com/limetext/lime/backend/util"
 	. "github.com/limetext/text"
-	"gopkg.in/qml.v1"
-	"image/color"
-	"io"
-	"runtime"
-	"strings"
-	"sync"
-	"time"
 )
 
 const (
@@ -457,6 +457,20 @@ func (fv *frontendView) Fix(obj qml.Object) {
 	}
 }
 
+// Make type `*frontendView` implement the BufferObserver interface
+func (fv *frontendView) Erased(changed_buffer Buffer, region_removed Region, data_removed []rune) {
+	var diff int = region_removed.A - region_removed.B
+	// If erasing then the position being removed from is the end of the buffer (point B)
+	fv.bufferChanged(changed_buffer, region_removed.B, diff)
+}
+
+func (fv *frontendView) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
+	var diff int = region_removed.B - region_removed.A
+	// If erasing then the position being removed from is the start of the buffer (point A),
+	// and the diff is inverted
+	fv.bufferChanged(changed_buffer, region_removed.A, diff)
+}
+
 func (fv *frontendView) bufferChanged(buf Buffer, pos, delta int) {
 	prof := util.Prof.Enter("frontendView.bufferChanged")
 	defer prof.Exit()
@@ -562,7 +576,7 @@ func (fv *frontendView) onChange(name string) {
 // Called when a new view is opened
 func (t *qmlfrontend) onNew(v *backend.View) {
 	fv := &frontendView{bv: v}
-	v.Buffer().AddCallback(fv.bufferChanged)
+	v.Buffer().AddObserver(fv)
 	v.Settings().AddOnChange("blah", fv.onChange)
 
 	fv.Title.Text = v.Buffer().FileName()
@@ -635,7 +649,7 @@ func (t *qmlfrontend) loop() (err error) {
 	ed.LogCommands(false)
 	c := ed.Console()
 	t.Console = &frontendView{bv: c}
-	c.Buffer().AddCallback(t.Console.bufferChanged)
+	c.Buffer().AddObserver(t.Console)
 	c.Buffer().AddCallback(t.scroll)
 
 	var (
