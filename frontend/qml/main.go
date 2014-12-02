@@ -474,10 +474,10 @@ func (fv *frontendView) Erased(changed_buffer Buffer, region_removed Region, dat
 }
 
 func (fv *frontendView) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
-	var diff int = region_removed.B - region_removed.A
+	var diff int = region_inserted.B - region_inserted.A
 	// If erasing then the position being removed from is the start of the buffer (point A),
 	// and the diff is inverted
-	fv.bufferChanged(changed_buffer, region_removed.A, diff)
+	fv.bufferChanged(changed_buffer, region_inserted.A, diff)
 }
 
 func (fv *frontendView) bufferChanged(buf Buffer, pos, delta int) {
