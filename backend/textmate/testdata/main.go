@@ -1,10 +1,8 @@
 package main
 
 import (
-	"code.google.com/p/log4go"
 	"fmt"
 	"io/ioutil"
-	"lime/3rdparty/libs/termbox-go"
 	"lime/backend"
 	"lime/backend/loaders"
 	"lime/backend/primitives"
@@ -12,6 +10,9 @@ import (
 	"lime/backend/textmate"
 	"strings"
 	"time"
+
+	"code.google.com/p/log4go"
+	"github.com/limetext/termbox-go"
 )
 
 var (
@@ -257,6 +258,15 @@ func (t *tbfe) OkCancelDialog(msg, ok string) {
 	log4go.Info(msg, ok)
 }
 
+// Make type *tbfe implement BufferObserver interface
+func (t *tbfe) Erased(changed_buffer Buffer, region_removed Region, data_removed []rune) {
+	t.scroll(changed_buffer)
+}
+
+func (t *tbfe) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
+	t.scroll(changed_buffer)
+}
+
 func (t *tbfe) scroll(b *primitives.Buffer, pos, delta int) {
 	t.Show(backend.GetEditor().Console(), primitives.Region{b.Size(), b.Size()})
 }
@@ -363,7 +373,7 @@ func (t *tbfe) loop() {
 	t.active_window = w
 	v := w.OpenFile("main.go", 0)
 	v.Settings().Set("trace", true)
-	c.Buffer().AddCallback(t.scroll)
+	c.Buffer().AddObserver(t)
 
 	if err := v.SetSyntaxFile("../../3rdparty/bundles/GoSublime/GoSublime.tmLanguage"); err != nil {
 		log4go.Error("Unable to set syntax file: %s", err)
