@@ -386,6 +386,15 @@ func (t *qmlfrontend) OkCancelDialog(msg, ok string) bool {
 	return q.Show(msg, "StandardIcon.Question") == 1
 }
 
+// Implement observer interface for type `*qmlfrontend`
+func (t *qmlfrontend) Erased(changed_buffer Buffer, region_removed Region, data_removed []rune) {
+	t.scroll(changed_buffer)
+}
+
+func (t *qmlfrontend) Inserted(changed_buffer Buffer, region_inserted Region, data_inserted []rune) {
+	t.scroll(changed_buffer)
+}
+
 func (t *qmlfrontend) scroll(b Buffer, pos, delta int) {
 	t.Show(backend.GetEditor().Console(), Region{b.Size(), b.Size()})
 }
@@ -650,7 +659,7 @@ func (t *qmlfrontend) loop() (err error) {
 	c := ed.Console()
 	t.Console = &frontendView{bv: c}
 	c.Buffer().AddObserver(t.Console)
-	c.Buffer().AddCallback(t.scroll)
+	c.Buffer().AddObserver(t)
 
 	var (
 		engine    *qml.Engine
